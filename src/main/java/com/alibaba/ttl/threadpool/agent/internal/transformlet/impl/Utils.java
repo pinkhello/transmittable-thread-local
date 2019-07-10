@@ -1,6 +1,9 @@
 package com.alibaba.ttl.threadpool.agent.internal.transformlet.impl;
 
 import com.alibaba.ttl.TransmittableThreadLocal;
+import com.alibaba.ttl.TtlRunnable;
+import com.alibaba.ttl.spi.TtlAttachments;
+import com.alibaba.ttl.spi.TtlAttachmentsDelegate;
 import com.alibaba.ttl.spi.TtlEnhanced;
 import com.alibaba.ttl.threadpool.agent.internal.logging.Logger;
 import javassist.*;
@@ -96,4 +99,10 @@ public class Utils {
         else return TransmittableThreadLocal.Transmitter.capture();
     }
 
+    @SuppressWarnings("unused")
+    public static Runnable unwrapIfIsAutoWrapper(Runnable runnable) {
+        if(!(runnable instanceof TtlAttachments)) return runnable;
+        else if (TtlAttachmentsDelegate.isAutoWrapper((TtlAttachments) runnable)) return TtlRunnable.unwrap(runnable);
+        else return runnable;
+    }
 }
